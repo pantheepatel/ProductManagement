@@ -1,5 +1,10 @@
-using Microsoft.EntityFrameworkCore;
-using ProductManagement.Api;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.EntityFrameworkCore;
+global using ProductManagement.Api;
+global using ProductManagement.Api.models;
+global using ProductManagement.Api.Repository;
+global using ProductManagement.Api.UnitOfWork;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,6 +19,12 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<ProductDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"))
 );
+
+builder.Services.AddScoped<IUnitOfWork>(provider =>
+{
+    var context = provider.GetRequiredService<ProductDbContext>(); // your actual DbContext
+    return new UnitOfWork<ProductDbContext>(context);
+});
 
 var app = builder.Build();
 

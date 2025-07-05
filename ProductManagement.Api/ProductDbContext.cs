@@ -1,5 +1,3 @@
-using Microsoft.EntityFrameworkCore;
-using ProductManagement.Api.models;
 namespace ProductManagement.Api;
 public class ProductDbContext : DbContext
 {

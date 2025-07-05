@@ -1,50 +1,80 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿namespace ProductManagement.Api.Controllers;
 
-namespace ProductManagement.Api.Controllers
+[ApiController]
+[Route("api/[controller]")]
+public class CategoryController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class CategoryController : ControllerBase
+    private readonly IRepository<Category> _categoryRepository;
+    private readonly IUnitOfWork _unitOfWork;
+
+    public CategoryController(IUnitOfWork unitOfWork)
     {
-        // GET: api/Category
-        [HttpGet]
-        public IActionResult GetAll()
-        {
-            // TODO: Replace with actual data retrieval logic
-            return Ok(new[] { "Category1", "Category2" });
-        }
+        _unitOfWork = unitOfWork;
+        _categoryRepository = _unitOfWork.GetRepository<Category>();
+    }
 
-        // GET: api/Category/5
-        [HttpGet("{id}")]
-        public IActionResult GetById(int id)
-        {
-            // TODO: Replace with actual data retrieval logic
-            return Ok($"Category {id}");
-        }
+    // GET: api/Category
+    [HttpGet]
+    public async Task<IActionResult> GetAll()
+    {
+        var categories = await _categoryRepository.GetAllAsync();
+        return Ok(categories);
+    }
 
-        // POST: api/Category
-        [HttpPost]
-        public IActionResult Create([FromBody] object category)
-        {
-            // TODO: Replace with actual create logic
-            return CreatedAtAction(nameof(GetById), new { id = 1 }, category);
-        }
+    // GET: api/Category/5
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetById(int id)
+    {
+        var category = await _categoryRepository.GetByIdAsync(id);
+        if (category == null)
+            return NotFound();
+        return Ok(category);
+    }
 
-        // PUT: api/Category/5
-        [HttpPut("{id}")]
-        public IActionResult Update(int id, [FromBody] object category)
-        {
-            // TODO: Replace with actual update logic
-            return NoContent();
-        }
+    // POST: api/Category
+    [HttpPost]
+    public async Task<IActionResult> Create([FromBody] Category category)
+    {
+        if (category == null)
+            return BadRequest();
 
-        // DELETE: api/Category/5
-        [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
-        {
-            // TODO: Replace with actual delete logic
-            return NoContent();
-        }
+        await _categoryRepository.AddAsync(category);
+        await _unitOfWork.CompleteAsync();
+
+        return CreatedAtAction(nameof(GetById), new { id = category.Id }, category);
+    }
+
+    // PUT: api/Category/5
+    [HttpPut("{id}")]
+    public async Task<IActionResult> Update(int id, [FromBody] Category category)
+    {
+        if (category == null || category.Id != id)
+            return BadRequest();
+
+        var existingCategory = await _categoryRepository.GetByIdAsync(id);
+        if (existingCategory == null)
+            return NotFound();
+
+        existingCategory.Name = category.Name;
+        existingCategory.Description = category.Description;
+
+        _categoryRepository.Update(existingCategory);
+        await _unitOfWork.CompleteAsync();
+
+        return NoContent();
+    }
+
+    // DELETE: api/Category/5
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> Delete(int id)
+    {
+        var category = await _categoryRepository.GetByIdAsync(id);
+        if (category == null)
+            return NotFound();
+
+        _categoryRepository.Remove(category);
+        await _unitOfWork.CompleteAsync();
+
+        return NoContent();
     }
 }
