@@ -1,0 +1,11 @@
+﻿global using Microsoft.EntityFrameworkCore;
+global using ProductManagement.Api;
+global using ProductManagement.Api.DTOs;
+global using ProductManagement.Api.models;
+global using ProductManagement.Api.Repository;
+global using ProductManagement.Api.Services.CategoryService;
+global using ProductManagement.Api.Services.CustomerService;
+global using ProductManagement.Api.UnitOfWork;
+global using Microsoft.AspNetCore.Mvc;
+global using Moq;
+global using ProductManagement.Api.Controllers;

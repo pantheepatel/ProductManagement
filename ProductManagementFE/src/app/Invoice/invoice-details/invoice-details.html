@@ -1,0 +1,56 @@
+<div class="container mt-4" *ngIf="invoiceDetail">
+  <div class="card shadow-sm">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">Invoice #{{ invoiceDetail.id }}</h5>
+    </div>
+
+    <div class="card-body">
+      <div class="row mb-3">
+        <div class="col-md-4">
+          <strong>Customer ID:</strong> {{ invoiceDetail.customerId }}
+        </div>
+        <div class="col-md-4">
+          <strong>Date:</strong> {{ invoiceDetail.date | date:'mediumDate' }}
+        </div>
+        <div class="col-md-4">
+          <strong>Total Items:</strong> {{ invoiceDetail.totalItems }}
+        </div>
+      </div>
+
+      <div class="table-responsive">
+        <table class="table table-bordered table-sm align-middle">
+          <thead class="table-light">
+            <tr>
+              <th>#</th>
+              <th>Product Name</th>
+              <th>Quantity</th>
+              <th>Price</th>
+              <th>Tax (%)</th>
+              <th>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of invoiceDetail.products; let i = index">
+              <td>{{ i + 1 }}</td>
+              <td>{{ item.productName }}</td>
+              <td>{{ item.quantity }}</td>
+              <td>₹ {{ item.unitPrice }}</td>
+              <td>{{ item.tax }}%</td>
+              <td>₹ {{ item.total }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="text-end mt-4">
+        <p><strong>Subtotal:</strong> ₹ {{ invoiceDetail.priceTotal }}</p>
+        <p><strong>Tax:</strong> ₹ {{ invoiceDetail.taxTotal }}</p>
+        <p class="fs-5"><strong>Grand Total:</strong> ₹ {{ invoiceDetail.grandTotal }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="!invoiceDetail" class="text-center mt-5 text-muted">
+  <p>Loading invoice details...</p>
+</div>

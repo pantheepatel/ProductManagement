@@ -1,0 +1,69 @@
+<div class="container mt-4">
+  <!-- Create Invoice Header Row -->
+  <form [formGroup]="invoiceForm" class="row g-3 align-items-end mb-4">
+    <div class="col-md-3">
+      <label for="customer" class="form-label">Customer</label>
+      <select formControlName="customerId" class="form-select" id="customer">
+        <option *ngFor="let customer of customers" [value]="customer.id">
+          {{ customer.name }}
+        </option>
+      </select>
+    </div>
+
+    <div class="col-md-3">
+      <label for="product" class="form-label">Product</label>
+      <select formControlName="productId" class="form-select" id="product">
+        <option *ngFor="let product of products" [value]="product.id">
+          {{ product.name }}
+        </option>
+      </select>
+    </div>
+
+    <div class="col-md-2">
+      <label for="quantity" class="form-label">Quantity</label>
+      <input type="number" formControlName="quantity" class="form-control" id="quantity" min="1" />
+    </div>
+
+    <div class="col-md-2">
+      <button type="button" class="btn btn-outline-primary w-100" (click)="addInvoiceItem()">
+        Add Item
+      </button>
+    </div>
+
+    <div class="col-md-2">
+      <button type="button" class="btn btn-success w-100" [disabled]="invoiceItems.length === 0"
+              (click)="createInvoice()">
+        Create Invoice
+      </button>
+    </div>
+  </form>
+
+  <!-- Pending Invoice Item List -->
+  <div *ngIf="invoiceItems.length > 0" class="mb-4">
+    <h6>Items in current invoice:</h6>
+    <ul class="list-group">
+      <li class="list-group-item d-flex justify-content-between align-items-center"
+          *ngFor="let item of invoiceItems; let i = index">
+        {{ item.productName }} - Qty: {{ item.quantity }}
+        <button class="btn btn-sm btn-danger" (click)="removeItem(i)">Remove</button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Invoices Card Grid -->
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+    <div class="col" *ngFor="let invoice of invoices">
+      <div class="card shadow-sm h-100" [routerLink]="['/invoices/', invoice.id]" style="cursor: pointer;">
+        <div class="card-body">
+          <h5 class="card-title">Invoice #{{ invoice.id }}</h5>
+          <h6 class="card-subtitle text-muted mb-2">{{ getCustomerName(invoice.customerId) }}</h6>
+          <p class="card-text mb-1"><strong>Date:</strong> {{ invoice.date | date: 'shortDate' }}</p>
+          <p class="card-text mb-1"><strong>Items:</strong> {{ invoice.totalItems }}</p>
+          <p class="card-text mb-1"><strong>Subtotal:</strong> ₹{{ invoice.priceTotal }}</p>
+          <p class="card-text mb-1"><strong>Tax:</strong> ₹{{ invoice.taxTotal }}</p>
+          <p class="card-text"><strong>Grand Total:</strong> ₹{{ invoice.grandTotal }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

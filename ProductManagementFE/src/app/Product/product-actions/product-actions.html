@@ -1,0 +1,211 @@
+<div class="container mt-5">
+    <!-- Heading -->
+    <div class="card shadow-sm mb-4">
+        <div class="card-body bg-primary text-white text-uppercase fw-bold fs-4">
+            {{ action }} Product
+        </div>
+    </div>
+
+    <!-- Form Card -->
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <form [formGroup]="productRegistrationForm" (ngSubmit)="onSubmit()">
+                <div class="row mb-3">
+                    <!-- Product Name -->
+                    <div class="col-md-6">
+                        <label for="name" class="form-label"
+                            [ngClass]="{'text-danger': submitted && productRegistrationForm.controls['name'].errors}">
+                            Name
+                        </label>
+                        <input id="name" type="text" class="form-control" formControlName="name"
+                            [ngClass]="{'is-invalid': submitted && productRegistrationForm.controls['name'].invalid}" />
+                        <div class="invalid-feedback"
+                            *ngIf="submitted && productRegistrationForm.controls['name'].errors?.['required']">
+                            <sup>*</sup> Please enter product name
+                        </div>
+                        <div class="invalid-feedback"
+                            *ngIf="submitted && productRegistrationForm.controls['name'].errors?.['minlength']">
+                            <sup>*</sup> At least 3 characters required
+                        </div>
+                    </div>
+
+                    <!-- Product Description -->
+                    <div class="col-md-6">
+                        <label for="description" class="form-label"
+                            [ngClass]="{'text-danger': submitted && productRegistrationForm.controls['description'].errors}">
+                            Description
+                        </label>
+                        <textarea id="description" rows="3" class="form-control" formControlName="description"
+                            [ngClass]="{'is-invalid': submitted && productRegistrationForm.controls['description'].invalid}">
+                        </textarea>
+                        <div class="invalid-feedback"
+                            *ngIf="submitted && productRegistrationForm.controls['description'].errors?.['required']">
+                            <sup>*</sup> Please enter description
+                        </div>
+                        <div class="invalid-feedback"
+                            *ngIf="submitted && productRegistrationForm.controls['description'].errors?.['minlength']">
+                            <sup>*</sup> At least 10 characters required
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-3">
+                    <!-- Base Price -->
+                    <div class="col-md-4">
+                        <label for="basePrice" class="form-label"
+                            [ngClass]="{'text-danger': submitted && productRegistrationForm.controls['basePrice'].errors}">
+                            Base Price (₹)
+                        </label>
+                        <input id="basePrice" type="number" class="form-control" formControlName="basePrice"
+                            [ngClass]="{'is-invalid': submitted && productRegistrationForm.controls['basePrice'].invalid}" />
+                        <div class="invalid-feedback"
+                            *ngIf="submitted && productRegistrationForm.controls['basePrice'].errors?.['required']">
+                            <sup>*</sup> Base price is required
+                        </div>
+                    </div>
+
+                    <!-- Tax -->
+                    <div class="col-md-4">
+                        <label for="tax" class="form-label"
+                            [ngClass]="{'text-danger': submitted && productRegistrationForm.controls['tax'].errors}">
+                            Tax (%)
+                        </label>
+                        <input id="tax" type="number" class="form-control" formControlName="tax"
+                            [ngClass]="{'is-invalid': submitted && productRegistrationForm.controls['tax'].invalid}" />
+                        <div class="invalid-feedback"
+                            *ngIf="submitted && productRegistrationForm.controls['tax'].errors?.['required']">
+                            <sup>*</sup> Tax value is required
+                        </div>
+                    </div>
+
+                    <!-- Category -->
+                    <div class="col-md-4">
+                        <label for="categoryId" class="form-label"
+                            [ngClass]="{'text-danger': submitted && productRegistrationForm.controls['categoryId'].errors}">
+                            Category
+                        </label>
+                        <select id="categoryId" class="form-select" formControlName="categoryId"
+                            [ngClass]="{'is-invalid': submitted && productRegistrationForm.controls['categoryId'].invalid}">
+                            <option value="" selected disabled>-- Select Category --</option>
+                            <option *ngFor="let cat of categories" [value]="cat.id">{{ cat.name }}</option>
+                        </select>
+                        <div class="invalid-feedback"
+                            *ngIf="submitted && productRegistrationForm.controls['categoryId'].errors?.['required']">
+                            <sup>*</sup> Please select a category
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Current Price (Readonly) -->
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="currentPrice" class="form-label">Current Effective Price</label>
+                        <small class="text-muted">(Auto calculated field after submission)</small>
+                        <input id="currentPrice" type="number" class="form-control" formControlName="currentPrice"
+                            readonly />
+                    </div>
+                </div>
+
+                <!-- Prices Array Placeholder -->
+                <div class="mb-3" formArrayName="prices">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <label class="form-label">Seasonal Prices</label>
+                        <button class="btn btn-sm btn-outline-primary" (click)="newRow()"
+                            [disabled]="isReadOnlyMode()">Add row</button>
+                    </div>
+
+                    <div *ngIf="action === 'read' && prices?.length! > 0">
+                        <h4>Seasonal Prices</h4>
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Seasonal Price</th>
+                                    <th>Start Date</th>
+                                    <th>End Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr *ngFor="let price of prices.controls">
+                                    <td>{{ price.get('seasonalPrice')?.value }}</td>
+                                    <td>{{ price.get('startDate')?.value | date: 'mediumDate' }}</td>
+                                    <td>{{ price.get('endDate')?.value | date: 'mediumDate' }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <ng-container *ngIf="action !== 'read'">
+                        <div *ngFor="let priceGroup of prices.controls; let i = index" [formGroupName]="i"
+                            class="d-flex justify-content-between gap-2 mt-2">
+                            <div class="w-100">
+                                <label class="form-label">Start Date</label>
+                                <input type="date" class="form-control" formControlName="startDate"
+                                    [ngClass]="{'is-invalid': submitted && priceGroup.get('startDate')?.invalid}" />
+                                <div class="invalid-feedback"
+                                    *ngIf="submitted && priceGroup.get('startDate')?.errors?.['required']">
+                                    <sup>*</sup> Start date is required
+                                </div>
+                                <div class="invalid-feedback"
+                                    *ngIf="priceGroup.get('startDate')?.errors?.['invalidRange']">
+                                    <sup>*</sup> Start date must be before end date.
+                                </div>
+                            </div>
+
+                            <div class="w-100">
+                                <label class="form-label">End Date</label>
+                                <input type="date" class="form-control" formControlName="endDate"
+                                    [ngClass]="{'is-invalid': submitted && priceGroup.get('endDate')?.invalid}" />
+                                <div class="invalid-feedback"
+                                    *ngIf="submitted && priceGroup.get('endDate')?.errors?.['required']">
+                                    <sup>*</sup> End date is required
+                                </div>
+                                <div class="invalid-feedback"
+                                    *ngIf="priceGroup.get('endDate')?.errors?.['invalidRange']">
+                                    <sup>*</sup> End date must be after start date.
+                                </div>
+                            </div>
+
+                            <div class="w-100">
+                                <label class="form-label">Seasonal Price</label>
+                                <input type="number" class="form-control" formControlName="seasonalPrice"
+                                    [ngClass]="{'is-invalid': submitted && priceGroup.get('seasonalPrice')?.invalid}" />
+                                <div class="invalid-feedback"
+                                    *ngIf="submitted && priceGroup.get('seasonalPrice')?.errors?.['required']">
+                                    <sup>*</sup> Seasonal Price is required
+                                </div>
+                            </div>
+                            <div *ngIf="prices.errors?.['overlap']" class="text-danger">
+                                <sup>*</sup> Overlapping date ranges are not allowed
+                            </div>
+                        </div>
+                    </ng-container>
+                </div>
+
+
+                <!-- Submit Button -->
+                <div class="mb-3">
+                    <button *ngIf="action !== 'read'" type="submit" class="btn btn-danger">
+                        {{ action === 'edit' ? 'Save Changes' : 'Create Product' }}
+                    </button>
+                </div>
+            </form>
+
+            <!-- Action Controls -->
+            <div class="d-flex flex-wrap gap-2">
+                <button class="btn btn-secondary" [routerLink]="['../../products']">
+                    View Product List
+                </button>
+
+                <ng-container *ngIf="action === 'read'">
+                    <button class="btn btn-primary" (click)="changeAction('edit')">Edit</button>
+                    <button class="btn btn-success" (click)="changeAction('create')">Create New</button>
+                </ng-container>
+
+                <ng-container *ngIf="action === 'edit'">
+                    <button class="btn btn-outline-secondary" (click)="changeAction('read')">View</button>
+                    <button class="btn btn-success" (click)="changeAction('create')">Create New</button>
+                </ng-container>
+            </div>
+        </div>
+    </div>
+</div>

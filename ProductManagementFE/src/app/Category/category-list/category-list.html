@@ -1,0 +1,48 @@
+<div class="container mt-4">
+  <div class="d-flex justify-content-end mb-3">
+    <a [routerLink]="['/category/new']" class="btn btn-primary">+ Create Category</a>
+  </div>
+
+  <div class="mb-2 text-muted">
+    <small>Click on a category name to view details. Delete button excluded from navigation.</small>
+  </div>
+
+  <table class="table table-bordered table-hover align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>Name</th>
+        <th>Description</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let category of categories"
+          [routerLink]="['/category', category.id]"
+          style="cursor: pointer;">
+        <td>{{ category.name }}</td>
+        <td>{{ category.description }}</td>
+        <td (click)="$event.stopPropagation()">
+          <button class="btn btn-sm btn-outline-danger ms-2"
+                  (click)="openDeleteModal($event, category.id)">
+            Delete
+          </button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <!-- Delete Confirmation Modal -->
+  <ng-template #deleteModal let-modal>
+    <div class="modal-header">
+      <h5 class="modal-title">Confirm Deletion</h5>
+      <button type="button" class="btn-close" aria-label="Close" (click)="modal.dismiss()"></button>
+    </div>
+    <div class="modal-body">
+      Are you sure you want to delete this category?
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" (click)="modal.dismiss()">Cancel</button>
+      <button type="button" class="btn btn-danger" (click)="confirmDelete(modal)">Delete</button>
+    </div>
+  </ng-template>
+</div>

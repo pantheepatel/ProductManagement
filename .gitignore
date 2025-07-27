@@ -1,0 +1,18 @@
+# --- Node / Angular ---
+ProductManagementFE/node_modules/
+ProductManagementFE/dist/
+ProductManagementFE/.angular/
+ProductManagementFE/package-lock.json
+
+# --- .NET ---
+ProductManagementBE/bin/
+ProductManagementBE/obj/
+ProductManagementBE/TestResults/
+ProductManagementBE/*.user
+ProductManagementBE/*.suo
+
+# --- OS / IDE ---
+.vscode/
+*.log
+.DS_Store
+Thumbs.db

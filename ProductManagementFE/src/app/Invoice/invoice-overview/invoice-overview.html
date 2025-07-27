@@ -1,0 +1,7 @@
+<div *ngFor="let invoice of invoices; let i = index" class="card border-2 my-2">
+    <div class="card-body" [routerLink]="['/invoice', invoice.id]">
+        <h5>Invoice #{{ i + 1 }}</h5>
+        <p>Invoice Details: {{ invoice.details }}</p>
+        <p>Total Amount: {{ invoice.totalAmount | currency }}</p>
+    </div>
+</div>

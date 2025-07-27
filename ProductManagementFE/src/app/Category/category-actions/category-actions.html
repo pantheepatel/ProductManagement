@@ -1,0 +1,110 @@
+<div class="container mt-5">
+  <!-- Heading -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-body bg-primary text-white text-uppercase fw-bold fs-4">
+      {{ action }} Category
+    </div>
+  </div>
+
+  <!-- Form Card -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <form [formGroup]="categoryRegistrationForm">
+        <div class="row mb-3">
+          <!-- Category Name -->
+          <div class="col-md-6">
+            <label 
+              for="name" 
+              class="form-label" 
+              [ngClass]="{'text-danger': submitted && categoryRegistrationForm.controls['name'].errors}"
+            >
+              Name
+            </label>
+            <input 
+              id="name"
+              type="text"
+              class="form-control"
+              formControlName="name"
+              [ngClass]="{
+                'is-invalid': submitted && categoryRegistrationForm.controls['name'].invalid
+              }"
+            />
+            <div 
+              class="invalid-feedback"
+              *ngIf="submitted && categoryRegistrationForm.controls['name'].errors?.['required']"
+            >
+              <sup>*</sup> Please enter category name
+            </div>
+            <div 
+              class="invalid-feedback"
+              *ngIf="submitted && categoryRegistrationForm.controls['name'].errors?.['minlength']"
+            >
+              <sup>*</sup> Please enter at least 3 characters
+            </div>
+          </div>
+
+          <!-- Category Description -->
+          <div class="col-md-6">
+            <label 
+              for="description" 
+              class="form-label"
+              [ngClass]="{'text-danger': submitted && categoryRegistrationForm.controls['description'].errors}"
+            >
+              Description
+            </label>
+            <textarea 
+              id="description"
+              rows="3"
+              class="form-control"
+              formControlName="description"
+              [ngClass]="{
+                'is-invalid': submitted && categoryRegistrationForm.controls['description'].invalid
+              }"
+            ></textarea>
+            <div 
+              class="invalid-feedback"
+              *ngIf="submitted && categoryRegistrationForm.controls['description'].errors?.['required']"
+            >
+              <sup>*</sup> Please enter category description
+            </div>
+            <div 
+              class="invalid-feedback"
+              *ngIf="submitted && categoryRegistrationForm.controls['description'].errors?.['minlength']"
+            >
+              <sup>*</sup> Please enter at least 10 characters
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button (Only in Edit/Create Mode) -->
+        <div class="mb-3">
+          <button 
+            *ngIf="action !== 'read'" 
+            type="submit" 
+            class="btn btn-danger"
+            (click)="onSubmit()"
+          >
+            {{ action === 'edit' ? 'Save' : 'Create Category' }}
+          </button>
+        </div>
+      </form>
+
+      <!-- Action Controls -->
+      <div class="d-flex flex-wrap gap-2">
+        <button class="btn btn-secondary" [routerLink]="['../../categories']">
+          View Category List
+        </button>
+
+        <ng-container *ngIf="action === 'read'">
+          <button class="btn btn-primary" (click)="changeAction('edit')">Edit</button>
+          <button class="btn btn-success" (click)="changeAction('create')">Create New</button>
+        </ng-container>
+
+        <ng-container *ngIf="action === 'edit'">
+          <button class="btn btn-outline-secondary" (click)="changeAction('read')">View</button>
+          <button class="btn btn-success" (click)="changeAction('create')">Create New</button>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>
